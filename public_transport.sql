@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2022 at 01:06 PM
+-- Generation Time: Mar 09, 2022 at 02:49 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -30,7 +30,8 @@ USE `public_transport`;
 --
 
 CREATE TABLE `buses` (
-  `licence_plate_number` varchar(10) NOT NULL,
+  `buses_id` int(10) NOT NULL,
+  `licence_plate_number` varchar(10) DEFAULT NULL,
   `model` int(30) NOT NULL,
   `capacity` tinyint(4) NOT NULL,
   `driver_id` int(11) NOT NULL
@@ -40,15 +41,15 @@ CREATE TABLE `buses` (
 -- Dumping data for table `buses`
 --
 
-INSERT INTO `buses` (`licence_plate_number`, `model`, `capacity`, `driver_id`) VALUES
-('W12323T', 2, 50, 5),
-('W15123C', 1, 30, 3),
-('W33323R', 2, 50, 8),
-('W36313E', 4, 100, 4),
-('W44323Z', 1, 30, 7),
-('W53434B', 3, 70, 2),
-('W55323E', 2, 50, 1),
-('W55323K', 3, 70, 6);
+INSERT INTO `buses` (`buses_id`, `licence_plate_number`, `model`, `capacity`, `driver_id`) VALUES
+(1, 'W15123C', 2, 50, 5),
+(2, 'W44323Z', 1, 30, 3),
+(3, 'W12323T', 2, 50, 8),
+(4, 'W33233R', 4, 100, 4),
+(5, 'W55323E', 1, 30, 7),
+(6, 'W53434B', 3, 70, 2),
+(7, 'W55323K', 2, 50, 1),
+(8, 'W36313E', 3, 70, 6);
 
 -- --------------------------------------------------------
 
@@ -256,22 +257,22 @@ INSERT INTO `mapping` (`mapping_id`, `fk_route_id`, `fk_bus_station_id`, `bus_st
 CREATE TABLE `routes` (
   `route_id` int(11) NOT NULL,
   `distance` int(11) NOT NULL,
-  `licence_plate_number` varchar(10) NOT NULL
+  `fk_buses_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `routes`
 --
 
-INSERT INTO `routes` (`route_id`, `distance`, `licence_plate_number`) VALUES
-(1, 200, 'W12323T'),
-(2, 200, 'W15123C'),
-(3, 220, 'W33323R'),
-(4, 80, 'W36313E'),
-(5, 335, 'W44323Z'),
-(6, 240, 'W53434B'),
-(7, 370, 'W55323E'),
-(8, 480, 'W55323K');
+INSERT INTO `routes` (`route_id`, `distance`, `fk_buses_id`) VALUES
+(1, 200, 4),
+(2, 200, 5),
+(3, 220, 1),
+(4, 80, 3),
+(5, 335, 2),
+(6, 240, 7),
+(7, 370, 6),
+(8, 480, 8);
 
 --
 -- Indexes for dumped tables
@@ -281,7 +282,8 @@ INSERT INTO `routes` (`route_id`, `distance`, `licence_plate_number`) VALUES
 -- Indexes for table `buses`
 --
 ALTER TABLE `buses`
-  ADD PRIMARY KEY (`licence_plate_number`),
+  ADD PRIMARY KEY (`buses_id`),
+  ADD UNIQUE KEY `licence_plate_number` (`licence_plate_number`),
   ADD KEY `driver_id` (`driver_id`),
   ADD KEY `model` (`model`);
 
@@ -323,11 +325,17 @@ ALTER TABLE `mapping`
 --
 ALTER TABLE `routes`
   ADD PRIMARY KEY (`route_id`),
-  ADD KEY `licence_plate_number` (`licence_plate_number`);
+  ADD KEY `fk_buses_id` (`fk_buses_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `buses`
+--
+ALTER TABLE `buses`
+  MODIFY `buses_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `bus_models`
@@ -393,7 +401,7 @@ ALTER TABLE `mapping`
 -- Constraints for table `routes`
 --
 ALTER TABLE `routes`
-  ADD CONSTRAINT `routes_ibfk_1` FOREIGN KEY (`licence_plate_number`) REFERENCES `buses` (`licence_plate_number`);
+  ADD CONSTRAINT `routes_ibfk_1` FOREIGN KEY (`fk_buses_id`) REFERENCES `buses` (`buses_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
